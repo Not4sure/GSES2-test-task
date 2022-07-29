@@ -1,0 +1,8 @@
+{
+  "name": "GSES2-test-task",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "git@github.com:Not4sure/GSES2-test-task.git",
+  "author": "NotSure <juliy.maj@gmail.com>",
+  "license": "GPL3"
+}
