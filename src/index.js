@@ -11,7 +11,7 @@ app.use(express.json())
 
 app.get('/rate', controller.rate)
 
-// app.post('/subscribe', )
+app.post('/subscribe', controller.subscribe)
 // app.post('/sendEmails', )
 
 app.listen(port, async () => {

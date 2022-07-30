@@ -1,4 +1,12 @@
 import fetch from "node-fetch";
+import * as constants from "constants";
+import fs from 'fs'
+import * as util from "util";
+
+const readFile = (fileName) => util.promisify(fs.readFile)(fileName, 'utf8');
+const writeFile = (fileName, data) => util.promisify(fs.writeFile)(fileName, data, 'utf8');
+
+const dataPath = process.env.DATA_PATH ?? '../data'
 
 const origin = 'api.coingecko.com'
 const path = '/api/v3/simple/price'
@@ -13,6 +21,21 @@ class Service {
 
         return json.bitcoin.uah
     }
+
+
+    async saveEmail(email) {
+        const file = `${dataPath}/mails.json`
+        const emails = JSON.parse(await readFile(file))
+
+        if (!emails.includes(email)) {
+            emails.push(email)
+            await writeFile(file, JSON.stringify(emails))
+            return true
+        }
+        return false
+    }
+
+
 
 }
 
