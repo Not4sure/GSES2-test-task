@@ -101,3 +101,6 @@ dist
 
 # Application data
 data/
+
+# Compiled sources
+dist/

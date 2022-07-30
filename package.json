@@ -4,5 +4,21 @@
   "main": "src/index.js",
   "repository": "git@github.com:Not4sure/GSES2-test-task.git",
   "author": "NotSure <juliy.maj@gmail.com>",
-  "license": "GPL3"
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "build": "babel src/ -d dist/",
+    "serve": "babel -w src/ -d dist/ | nodemon --watch dist"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "node-fetch": "^3.2.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.9",
+    "@babel/plugin-proposal-optional-chaining": "^7.18.9",
+    "@babel/cli": "^7.18.9",
+    "nodemon": "^2.0.19"
+  }
 }
