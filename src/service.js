@@ -1,31 +1,31 @@
-import fetch from "node-fetch";
-import * as constants from "constants";
-import fs from 'fs'
-import * as util from "util";
-import e from "express";
-
-const readFile = (fileName) => util.promisify(fs.readFile)(fileName, 'utf8');
-const writeFile = (fileName, data) => util.promisify(fs.writeFile)(fileName, data, 'utf8');
+import fetch from 'node-fetch'
+import nodemailer from 'nodemailer'
+import {readFile, writeFile, dataPath} from './utils.js'
+import {config} from "dotenv"
+config({path: '.env'})
 
 const origin = 'api.coingecko.com'
 const path = '/api/v3/simple/price'
 const crypto = 'bitcoin'
 const currency = 'uah'
 
-const dataPath = process.env.DATA_PATH ?? './data'
+const from = process.env.MAIL_USER
 
-fs.access(dataPath, (err) => {
-    if (err) {
-        fs.mkdir(dataPath, (err) => {
-            if (err) {
-                console.log(error)
-                process.exit(1)
-            } else {
-                console.log("Data directory created")
-            }
-        });
+
+console.log( {
+    user: from,
+    password: process.env.MAIL_PASSWORD
+})
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: false,
+    auth: {
+        user: from,
+        password: process.env.MAIL_PASSWORD
     }
-});
+})
 
 class Service {
 
@@ -36,16 +36,23 @@ class Service {
         return json.bitcoin.uah
     }
 
+    async getEmails() {
+        const file = `${dataPath}/emails.json`
+
+        let emails = []
+
+        try {
+            emails = JSON.parse((await readFile(file)).toString())
+        } catch (e) {
+            console.log('File was not created yet')
+        }
+        return emails
+    }
+
 
     async saveEmail(email) {
         const file = `${dataPath}/emails.json`
-        let  emails = []
-
-        try {
-             emails = JSON.parse(await readFile(file))
-        } catch (e) {
-            console.log('File don`t exist')
-        }
+        const emails = await this.getEmails()
 
         if (!emails.includes(email)) {
             emails.push(email)
@@ -55,9 +62,27 @@ class Service {
         return false
     }
 
+    async sendEmails() {
+        const rate = await this.getRate()
+        const emails = await this.getEmails()
 
+        console.log(from)
 
+        const mailOptions = {
+            from,
+            subject: 'New bitcoin rate',
+            text: `Currently one bitcoin costs ${rate} UAH`
+        }
 
+        for(const mail of emails) {
+            await transporter.sendMail({to: mail, ...mailOptions}, (err, info) => {
+                if(err)
+                    console.log(err)
+                else
+                    console.log(info.response)
+            })
+        }
+    }
 
 }
 

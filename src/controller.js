@@ -17,6 +17,11 @@ class Controller {
         else
             return res.sendStatus(409)
     }
+
+    async sendEmails(req, res) {
+        await service.sendEmails()
+        return res.sendStatus(200)
+    }
 }
 
 export default new Controller()
